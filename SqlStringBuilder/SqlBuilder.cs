@@ -705,7 +705,7 @@ namespace SqlStringBuilder
             /// <returns></returns>
             public SqlBuilderInsert ColumnValues(DataTable rawDataTable)
             {
-                dataTable = rawDataTable.Clone();
+                dataTable = rawDataTable.Copy();
                 return this;
             }
 
