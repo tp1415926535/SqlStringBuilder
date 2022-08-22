@@ -1,10 +1,9 @@
 # SqlStringBuilder
 Generate sql statements by freely calling functions instead of manually splicing strings.     
 通过自由调用函数生成sql语句，而不用手动拼接字符串。   
+[Nuget_Package_Link](https://www.nuget.org/packages/SqlStringBuilder/1.0.0)    
 
 ## Instructions
-[Nuget_Package_Link](https://www.nuget.org/packages/SqlStringBuilder/1.0.0)   
-
 Just reference the Release's Dll file.      
 引用Release的Dll文件即可。    
 
