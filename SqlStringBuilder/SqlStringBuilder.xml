@@ -1,0 +1,594 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SqlStringBuilder</name>
+    </assembly>
+    <members>
+        <member name="M:SqlStringBuilder.SqlBuilder.#ctor">
+            <summary>
+            构造函数
+            </summary>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.#ctor(System.String)">
+            <summary>
+            带表声明的构造函数
+            </summary>
+            <param name="dbTableName"></param>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.Read">
+            <summary>
+            使用读取模板
+            </summary>
+            <returns>select * from tableName...</returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.Insert">
+            <summary>
+            使用添加行模板
+            </summary>
+            <returns>insert into tableName (col1, ... ) values ('value1', ... )</returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.Update">
+            <summary>
+            使用修改行模板
+            </summary>
+            <returns>update tableName set col1 = 'value1', ... where xx = 'value'</returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.Delete">
+            <summary>
+            使用删除行模板
+            </summary>
+            <returns>delete from tabelName [ where xx = 'value' ]</returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.Create">
+            <summary>
+            使用创建表模板
+            </summary>
+            <returns>create table tableName (col1 type , ... )</returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.Alter">
+            <summary>
+            使用修改表结构模板
+            </summary>
+            <returns>alter table tableName...</returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.Drop(System.Boolean)">
+            <summary>
+            删除表
+            </summary>
+            <param name="checkExist"></param>
+            <returns>drop table [ if exists ]tableName;</returns>
+            <remarks>需要带上Table(tableName)</remarks>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.Copy(System.String,System.String)">
+            <summary>
+            复制表
+            </summary>
+            <param name="targetTable"></param>
+            <param name="targetDatabase"></param>
+            <returns>select into targetTable [ in targetDatabase ] from tableName</returns>
+            <remarks>需要带上Table(tableName)</remarks>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.CheckExist">
+            <summary>
+            判断表是否存在
+            </summary>
+            <returns>select name from sqlite_master where type='table' and name = 'tableName' </returns>
+            <remarks>需要带上Table(tableName)</remarks>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.Table(System.String)">
+            <summary>
+            声明作用的表
+            </summary>
+            <param name="dbtableName"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SqlStringBuilder.SqlBuilder.SqlBuilderRead">
+            <summary>
+            读取型模板
+            </summary>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderRead.#ctor(SqlStringBuilder.SqlBuilder)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="SqlBuilder"></param>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderRead.ToString">
+            <summary>
+            转为字符串
+            </summary>
+            <returns>select * from tableName...</returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderRead.Table(System.String)">
+            <summary>
+            声明作用的表
+            </summary>
+            <param name="dbtableName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderRead.Count">
+            <summary>
+            计数
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderRead.Distinct">
+            <summary>
+            去重
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderRead.Columns(System.String[])">
+            <summary>
+            读取的列名（列名）
+            </summary>
+            <param name="columnNames"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderRead.ColumnsAs(System.ValueTuple{System.String,System.String}[])">
+            <summary>
+            读取的列名（列名，读作新名）
+            </summary>
+            <param name="columnNames"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderRead.Where(System.ValueTuple{System.String,System.String}[])">
+            <summary>
+            筛选条件_相等_与（筛选列，筛选值）
+            </summary>
+            <param name="keyValuePairs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderRead.WhereLike(System.ValueTuple{System.String,System.String}[])">
+            <summary>
+            筛选条件_模糊_与（筛选列，筛选值）
+            </summary>
+            <param name="keyValuePairs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderRead.WhereOr(System.ValueTuple{System.String,System.String}[])">
+            <summary>
+            筛选条件_相等_或（筛选列，筛选值）
+            </summary>
+            <param name="keyValuePairs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderRead.WhereLikeOr(System.ValueTuple{System.String,System.String}[])">
+            <summary>
+            筛选条件_模糊_或（筛选列，筛选值）
+            </summary>
+            <param name="keyValuePairs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderRead.WhereIn(System.String,System.String[])">
+            <summary>
+            筛选条件_多个值（筛选列，值）
+            </summary>
+            <param name="column"></param>
+            <param name="values"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderRead.WhereBetween(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            筛选条件_范围值（筛选列，值边界1，值边界2，是否改取范围外）
+            </summary>
+            <param name="column"></param>
+            <param name="value1"></param>
+            <param name="value2"></param>
+            <param name="not"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderRead.Order(System.String[])">
+            <summary>
+            排序（排序列）
+            </summary>
+            <param name="orderColumns"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderRead.Order(System.ValueTuple{System.String,System.Boolean}[])">
+            <summary>
+            排序（排序列，是否倒序）
+            </summary>
+            <param name="orderColumnsAscend"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderRead.Limit(System.Int32)">
+            <summary>
+            限制行数（行数）
+            </summary>
+            <param name="count"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderRead.Offset(System.Int32)">
+            <summary>
+            跳过行数（行数）
+            </summary>
+            <param name="count"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderRead.Top(System.Int32,System.Boolean)">
+            <summary>
+            限制行数（数量，是否当做百分比0-100）
+            </summary>
+            <param name="count"></param>
+            <param name="isPercent"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SqlStringBuilder.SqlBuilder.SqlBuilderInsert">
+            <summary>
+            添加型模板
+            </summary>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderInsert.#ctor(SqlStringBuilder.SqlBuilder)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="SqlBuilder"></param>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderInsert.ToString">
+            <summary>
+            转为字符串
+            </summary>
+            <returns>insert into tableName (col1, ... ) values ('value1', ... )</returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderInsert.Table(System.String)">
+            <summary>
+            声明作用的表
+            </summary>
+            <param name="dbtableName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderInsert.ColumnValues(System.String[])">
+            <summary>
+            插入行_省略列（值）
+            </summary>
+            <param name="values"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderInsert.ColumnValues(System.ValueTuple{System.String,System.String}[])">
+            <summary>
+            插入行（列名，值）
+            </summary>
+            <param name="keyValuePairs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderInsert.ColumnValues(System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            插入行（字典＜列名，值＞）
+            </summary>
+            <param name="keyValuePairs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderInsert.ColumnValuesFromClass(System.Object,System.String[])">
+            <summary>
+            插入行（类实例，排除的属性）
+            </summary>
+            <param name="customClass"></param>
+            <param name="exclusion"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderInsert.ColumnValues(System.String[],System.String[][])">
+            <summary>
+            插入多行（列名，每行值）
+            </summary>
+            <param name="columns"></param>
+            <param name="multyRowPairs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderInsert.ColumnValues(System.Data.DataTable)">
+            <summary>
+            插入多行（数据表）
+            </summary>
+            <param name="rawDataTable"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderInsert.ColumnValuesFromClasses(System.Collections.Generic.IEnumerable{System.Object},System.String[])">
+            <summary>
+            插入多行（类实例列表，排除的属性）
+            </summary>
+            <param name="customClasses"></param>
+            <param name="exclusion"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderInsert.ReturnEffectCount(System.String)">
+            <summary>
+            返回影响的行数(依据列名)
+            </summary>
+            <param name="column"></param>
+        </member>
+        <member name="T:SqlStringBuilder.SqlBuilder.SqlBuilderUpdate">
+            <summary>
+            更新型模板
+            </summary>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderUpdate.#ctor(SqlStringBuilder.SqlBuilder)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="SqlBuilder"></param>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderUpdate.ToString">
+            <summary>
+            转为字符串
+            </summary>
+            <returns>update tableName set col1 = 'value1', ... where xx = 'value'</returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderUpdate.Table(System.String)">
+            <summary>
+            声明作用的表
+            </summary>
+            <param name="dbtableName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderUpdate.ColumnValues(System.ValueTuple{System.String,System.String}[])">
+            <summary>
+            更新行（列名，值）
+            </summary>
+            <param name="keyValuePairs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderUpdate.ColumnValues(System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            更新行（字典＜列名，值＞）
+            </summary>
+            <param name="keyValuePairs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderUpdate.ColumnValuesFromClass(System.Object,System.String[])">
+            <summary>
+            更新行（类实例，排除的属性）
+            </summary>
+            <param name="customClass"></param>
+            <param name="exclusion"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderUpdate.Where(System.ValueTuple{System.String,System.String}[])">
+            <summary>
+            筛选条件_相等_与（筛选列，筛选值）
+            </summary>
+            <param name="keyValuePairs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderUpdate.WhereLike(System.ValueTuple{System.String,System.String}[])">
+            <summary>
+            筛选条件_模糊_与（筛选列，筛选值）
+            </summary>
+            <param name="keyValuePairs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderUpdate.WhereOr(System.ValueTuple{System.String,System.String}[])">
+            <summary>
+            筛选条件_相等_或（筛选列，筛选值）
+            </summary>
+            <param name="keyValuePairs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderUpdate.WhereLikeOr(System.ValueTuple{System.String,System.String}[])">
+            <summary>
+            筛选条件_模糊_或（筛选列，筛选值）
+            </summary>
+            <param name="keyValuePairs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderUpdate.WhereIn(System.String,System.String[])">
+            <summary>
+            筛选条件_多个值（筛选列，值）
+            </summary>
+            <param name="column"></param>
+            <param name="values"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderUpdate.WhereBetween(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            筛选条件_范围值（筛选列，值边界1，值边界2，是否改取范围外）
+            </summary>
+            <param name="column"></param>
+            <param name="value1"></param>
+            <param name="value2"></param>
+            <param name="not"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderUpdate.ReturnEffectCount(System.String)">
+            <summary>
+            返回影响的行数(依据列名)
+            </summary>
+            <param name="column"></param>
+        </member>
+        <member name="T:SqlStringBuilder.SqlBuilder.SqlBuilderDelete">
+            <summary>
+            删除型模板
+            </summary>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderDelete.#ctor(SqlStringBuilder.SqlBuilder)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="SqlBuilder"></param>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderDelete.ToString">
+            <summary>
+            转为字符串
+            </summary>
+            <returns>delete from tabelName [ where xx = 'value' ]</returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderDelete.Table(System.String)">
+            <summary>
+            声明作用的表
+            </summary>
+            <param name="dbtableName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderDelete.Where(System.ValueTuple{System.String,System.String}[])">
+            <summary>
+            筛选条件_相等_与（筛选列，筛选值）
+            </summary>
+            <param name="keyValuePairs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderDelete.WhereLike(System.ValueTuple{System.String,System.String}[])">
+            <summary>
+            筛选条件_模糊_与（筛选列，筛选值）
+            </summary>
+            <param name="keyValuePairs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderDelete.WhereOr(System.ValueTuple{System.String,System.String}[])">
+            <summary>
+            筛选条件_相等_或（筛选列，筛选值）
+            </summary>
+            <param name="keyValuePairs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderDelete.WhereLikeOr(System.ValueTuple{System.String,System.String}[])">
+            <summary>
+            筛选条件_模糊_或（筛选列，筛选值）
+            </summary>
+            <param name="keyValuePairs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderDelete.WhereIn(System.String,System.String[])">
+            <summary>
+            筛选条件_多个值（筛选列，值）
+            </summary>
+            <param name="column"></param>
+            <param name="values"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderDelete.WhereBetween(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            筛选条件_范围值（筛选列，值边界1，值边界2，是否改取范围外）
+            </summary>
+            <param name="column"></param>
+            <param name="value1"></param>
+            <param name="value2"></param>
+            <param name="not"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderDelete.ReturnEffectCount(System.String)">
+            <summary>
+            返回影响的行数(依据列名)
+            </summary>
+            <param name="column"></param>
+        </member>
+        <member name="T:SqlStringBuilder.SqlBuilder.SqlBuilderCreate">
+            <summary>
+            创建表模板
+            </summary>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderCreate.#ctor(SqlStringBuilder.SqlBuilder)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="SqlBuilder"></param>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderCreate.ToString">
+            <summary>
+            转为字符串
+            </summary>
+            <returns>create table tableName (col1 type , ... )</returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderCreate.Table(System.String)">
+            <summary>
+            声明作用的表
+            </summary>
+            <param name="dbtableName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderCreate.ColumnType(System.ValueTuple{System.String,System.String}[])">
+            <summary>
+            列定义（列名，类型定义）
+            </summary>
+            <param name="nameTypePairs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderCreate.SetUnique(System.String)">
+            <summary>
+            设置唯一值列（列名）
+            </summary>
+            <param name="column"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderCreate.SetAutoIncreaseKey(System.String)">
+            <summary>
+            设置自增键
+            </summary>
+            <param name="column"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SqlStringBuilder.SqlBuilder.SqlBuilderAlter">
+            <summary>
+            修改表模板
+            </summary>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderAlter.#ctor(SqlStringBuilder.SqlBuilder)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="SqlBuilder"></param>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderAlter.ToString">
+            <summary>
+            转为字符串
+            </summary>
+            <returns>alter table tableName...</returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderAlter.Table(System.String)">
+            <summary>
+            声明作用的表
+            </summary>
+            <param name="dbtableName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderAlter.AddColumn(System.ValueTuple{System.String,System.String}[])">
+            <summary>
+            添加列（列名，类型定义）
+            </summary>
+            <param name="nameTypePairs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderAlter.DropColumn(System.String[])">
+            <summary>
+            删除列（列名）
+            </summary>
+            <param name="columns"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderAlter.ChangeColumnType(System.ValueTuple{System.String,System.String}[])">
+            <summary>
+            修改列类型（列名，新类型定义）
+            </summary>
+            <param name="nameTypePairs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderAlter.ChangeColumn(System.String,System.String,System.String)">
+            <summary>
+            修改列（列名，新列名，新类型定义）
+            </summary>
+            <param name="column"></param>
+            <param name="newColumnName"></param>
+            <param name="newColumnType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderAlter.RenameTable(System.String)">
+            <summary>
+            重命名表（新表名）
+            </summary>
+            <param name="newTableName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderAlter.SetUnique(System.String)">
+            <summary>
+            设置唯一值列（列名）
+            </summary>
+            <param name="uniqueColumn"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderAlter.DropUnique(System.String)">
+            <summary>
+            移除列唯一值（列名）
+            </summary>
+            <param name="uniqueColumn"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
