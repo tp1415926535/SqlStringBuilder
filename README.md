@@ -8,8 +8,8 @@ Generate sql statements by freely calling functions instead of manually splicing
 ![C#](https://img.shields.io/github/languages/top/tp1415926535/SqlStringBuilder) 
 
 ## Instructions
-Quote the Release Dll file or download the nuget package.      
-引用Release的Dll文件或下载nuget包。     
+Reference the Release dll file or download the nuget package.    
+引用Release的dll文件或下载nuget包。     
 
 ```C#
 using SqlStringBuilder;
@@ -66,7 +66,7 @@ var row1 = dataTable.NewRow(); row1["Column1"] = "1-1"; row1["Column2"] = "1-2";
 var row2 = dataTable.NewRow(); row2["Column1"] = "2-1"; row2["Column2"] = "2-2"; dataTable.Rows.Add(row2);
 string insertData = new SqlBuilder().Table("table").Insert().ColumnValues(dataTable).ToString();
 Console.WriteLine(insertData);
-//insert into table(Column1,Column2) values ('1,1','1,2'),('2,1','2,2')
+//insert into table(Column1,Column2) values ('1-1','1-2'),('2-1','2-2')
 ```
 
 ### Edit table structure
