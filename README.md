@@ -2,8 +2,8 @@
 Generate sql statements by freely calling functions instead of manually splicing strings.     
 通过自由调用函数生成sql语句，而不用手动拼接字符串。   
 
-[![release](https://img.shields.io/static/v1?label=release&message=1.0.1&color=green&logo=github)](https://github.com/tp1415926535/SqlStringBuilder/releases) 
-[![nuget](https://img.shields.io/static/v1?label=nuget&message=1.0.1&color=lightblue&logo=nuget)](https://www.nuget.org/packages/SqlStringBuilder) 
+[![release](https://img.shields.io/static/v1?label=release&message=1.0.2&color=green&logo=github)](https://github.com/tp1415926535/SqlStringBuilder/releases) 
+[![nuget](https://img.shields.io/static/v1?label=nuget&message=1.0.2&color=lightblue&logo=nuget)](https://www.nuget.org/packages/SqlStringBuilder) 
 [![license](https://img.shields.io/static/v1?label=license&message=MIT&color=silver)](https://github.com/tp1415926535/SqlStringBuilder/blob/master/LICENSE) 
 ![C#](https://img.shields.io/github/languages/top/tp1415926535/SqlStringBuilder) 
 
