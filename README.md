@@ -19,6 +19,9 @@ string sql = new SqlBuilder()
                 //Add command like Read() or Insert() etc... 
                 .ToString();   
 ``` 
+The order in which the methods are called is unaffected, except for the base functions(Read,Insert,Update,etc).     
+除了基础函数(Read,Insert,Update等)，其他方法的调用顺序不受影响。
+
 ## Examples
 
 ### Select
