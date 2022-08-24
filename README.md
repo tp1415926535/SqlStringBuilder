@@ -69,6 +69,28 @@ Console.WriteLine(insertData);
 //insert into table(Column1,Column2) values ('1-1','1-2'),('2-1','2-2')
 ```
 
+Or even use custom class instance (class properties should be set public and "{get;set;}" ) 
+```C#
+class Foo
+{
+    public string col1 { get; set; }
+    public string col2 { get; set; }
+}
+
+Foo foo = new Foo { col1 = "1", col2 = "2" };
+string insertClass = new SqlBuilder().Table("table").Insert().ColumnValuesFromClass(foo).ToString();
+Console.WriteLine(insertClass);
+//insert into table (col1 , col2 ) values ('1','2') 
+
+List<Foo> classes = new List<Foo>();
+classes.Add(new Foo { col1 = "a1", col2 = "a2" });
+classes.Add(new Foo { col1 = "b1", col2 = "b2" });
+classes.Add(new Foo { col1 = "c1", col2 = "c2" });
+string insertClasses = new SqlBuilder().Table("table").Insert().ColumnValuesFromClasses(classes).ToString();
+Console.WriteLine(insertClasses);
+//insert into table(col1,col2) values ('a1','a2'),('b1','b2'),('c1','c2')
+```
+
 ### Edit table structure
 ```C#
 string createTableSql = new SqlBuilder().Table("table").Create().ColumnType(("Column1", "integer"), ("Column2", "integer")).ToString();    
