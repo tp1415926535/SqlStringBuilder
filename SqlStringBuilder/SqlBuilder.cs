@@ -7,6 +7,9 @@ using System.Text;
 
 namespace SqlStringBuilder
 {
+    /// <summary>
+    /// SQL字符串构造器
+    /// </summary>
     public class SqlBuilder
     {
         enum WhereType
@@ -113,27 +116,6 @@ namespace SqlStringBuilder
             return str;
         }
 
-        /// <summary>
-        /// 复制表
-        /// </summary>
-        /// <param name="targetTable"></param>
-        /// <param name="targetDatabase"></param>
-        /// <returns>select into targetTable [ in targetDatabase ] from tableName</returns>
-        /// <remarks>需要带上Table(tableName)</remarks>
-        public string Copy(string targetTable, string targetDatabase = null)
-        {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append("select into ");
-            stringBuilder.Append(targetTable);
-            if (!string.IsNullOrEmpty(targetDatabase))
-            {
-                stringBuilder.Append(" in ");
-                stringBuilder.Append(targetDatabase);
-            }
-            stringBuilder.Append(" from ");
-            stringBuilder.Append(tableName);
-            return stringBuilder.ToString();
-        }
 
         /// <summary>
         /// 判断表是否存在
@@ -168,6 +150,9 @@ namespace SqlStringBuilder
             int limit = -1;
             int offset = -1;
             bool percent = false;
+
+            string tarTable;
+            string tarDatabase;
 
             /// <summary>
             /// 构造函数
@@ -223,6 +208,17 @@ namespace SqlStringBuilder
                 if (list.Count <= 0 && dic.Count <= 0)
                     stringBuilder.Append(" * ");
                 if (count) stringBuilder.Append(")");
+                if (!string.IsNullOrEmpty(tarTable))
+                {
+                    stringBuilder.Append(" into ");
+                    stringBuilder.Append(tarTable);
+                    if (!string.IsNullOrEmpty(tarDatabase))
+                    {
+                        stringBuilder.Append(" in '");
+                        stringBuilder.Append(tarDatabase);
+                        stringBuilder.Append("' ");
+                    }
+                }
                 stringBuilder.Append(" from ");
                 stringBuilder.Append(tableName);
                 if (whereFilter.Count > 0)
@@ -360,6 +356,22 @@ namespace SqlStringBuilder
                 }
                 return this;
             }
+
+
+            /// <summary>
+            /// 成为复制表语句
+            /// </summary>
+            /// <param name="targetTable"></param>
+            /// <param name="targetDatabase"></param>
+            /// <returns>select -> select into </returns>
+            public SqlBuilderRead Copy(string targetTable, string targetDatabase = null)
+            {
+                tarTable = targetTable;
+                tarDatabase = targetDatabase;
+                return this;
+            }
+
+
             private void SetWhereFilter(params (string, string)[] keyValuePairs)
             {
                 foreach (var pair in keyValuePairs)
@@ -518,6 +530,7 @@ namespace SqlStringBuilder
                 percent = isPercent;
                 return this;
             }
+
         }
 
         /// <summary>

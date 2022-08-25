@@ -59,15 +59,6 @@
             <returns>drop table [ if exists ]tableName;</returns>
             <remarks>需要带上Table(tableName)</remarks>
         </member>
-        <member name="M:SqlStringBuilder.SqlBuilder.Copy(System.String,System.String)">
-            <summary>
-            复制表
-            </summary>
-            <param name="targetTable"></param>
-            <param name="targetDatabase"></param>
-            <returns>select into targetTable [ in targetDatabase ] from tableName</returns>
-            <remarks>需要带上Table(tableName)</remarks>
-        </member>
         <member name="M:SqlStringBuilder.SqlBuilder.CheckExist">
             <summary>
             判断表是否存在
@@ -131,6 +122,14 @@
             </summary>
             <param name="columnNames"></param>
             <returns></returns>
+        </member>
+        <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderRead.Copy(System.String,System.String)">
+            <summary>
+            成为复制表语句
+            </summary>
+            <param name="targetTable"></param>
+            <param name="targetDatabase"></param>
+            <returns>select -> select into </returns>
         </member>
         <member name="M:SqlStringBuilder.SqlBuilder.SqlBuilderRead.Where(System.ValueTuple{System.String,System.String}[])">
             <summary>
