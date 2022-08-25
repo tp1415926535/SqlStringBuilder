@@ -120,7 +120,7 @@ string backupSql = new SqlBuilder().Table("table").Read().Columns("Column1", "Co
 Console.WriteLine(backupSql);    
 //select Column1,Column2 into targetTable from table
 
-string removeTableSql = new SqlBuilder().Table("table").Drop().ToString();    
+string removeTableSql = new SqlBuilder().Table("tableName").Drop().ToString();    
 Console.WriteLine(removeTableSql);    
-//drop table if exists table    
+//drop table if exists tableName    
 ```
