@@ -115,6 +115,9 @@ string checkTableExistSql2 = new SqlBuilder().Table("tableName").CheckExist();
 Console.WriteLine(checkTableExistSql2);
 //select name from sqlite_master where type='table' and name='tableName'
 
+string getAllTableSql = new SqlBuilder().Table("sqlite_master").Read().Columns("name").Where(("type", "table")).ToString();
+Console.WriteLine(getAllTableSql);
+//select name from sqlite_master where type ='table' 
 
 string backupSql = new SqlBuilder().Table("table").Read().Columns("Column1", "Column2").Copy("targetTable").ToString();        
 Console.WriteLine(backupSql);    
