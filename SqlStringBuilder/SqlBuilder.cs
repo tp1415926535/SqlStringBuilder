@@ -8,6 +8,52 @@ using System.Text;
 namespace SqlStringBuilder
 {
     /// <summary>
+    /// 
+    /// </summary>
+    public enum WhereOperator
+    {
+        /// <summary>
+        /// =
+        /// </summary>
+        Equal,
+
+        /// <summary>
+        /// ＞
+        /// </summary>
+        Greater,
+
+        /// <summary>
+        /// ＞=
+        /// </summary>
+        GreaterEqual,
+
+        /// <summary>
+        /// ＜
+        /// </summary>
+        Less,
+
+        /// <summary>
+        /// ＜=
+        /// </summary>
+        LessEqual,
+
+        /// <summary>
+        /// between
+        /// </summary>
+        Between,
+
+        /// <summary>
+        /// like
+        /// </summary>
+        Like,
+
+        /// <summary>
+        /// in
+        /// </summary>
+        In,
+    }
+
+    /// <summary>
     /// SQL字符串构造器
     /// </summary>
     public class SqlBuilder
@@ -100,31 +146,37 @@ namespace SqlStringBuilder
             return new SqlBuilderAlter(this);
         }
 
+
         /// <summary>
         /// 删除表
         /// </summary>
         /// <param name="checkExist"></param>
+        /// <param name="isView">是否为视图</param>
         /// <returns>drop table [ if exists ]tableName;</returns>
         /// <remarks>需要带上Table(tableName)</remarks>
-        public string Drop(bool checkExist = true)
+        public string Drop(bool checkExist = true, bool isView = false)
         {
+            string type = isView ? "view" : "table";
             string str = string.Empty;
             if (checkExist)
-                str = "drop table if exists " + tableName;
+                str = "drop " + type + " if exists " + tableName;
             else
-                str = "drop table " + tableName;
+                str = "drop " + type + " " + tableName;
             return str;
         }
+
 
 
         /// <summary>
         /// 判断表是否存在
         /// </summary>
+        /// <param name="isView">是否为视图</param>
         /// <returns>select name from sqlite_master where type='table' and name = 'tableName' </returns>
         /// <remarks>需要带上Table(tableName)</remarks>
-        public string CheckExist()
+        public string CheckExist(bool isView = false)
         {
-            return "select name from sqlite_master where type='table' and name='" + tableName + "'";
+            string type = isView ? "view" : "table";
+            return "select name from sqlite_master where type='" + type + "' and name='" + tableName + "'";
         }
 
 
@@ -154,6 +206,8 @@ namespace SqlStringBuilder
             string tarTable;
             string tarDatabase;
 
+            string ViewName;
+
             /// <summary>
             /// 构造函数
             /// </summary>
@@ -176,6 +230,12 @@ namespace SqlStringBuilder
             public new string ToString()
             {
                 StringBuilder stringBuilder = new StringBuilder();
+                if (!string.IsNullOrEmpty(ViewName))
+                {
+                    stringBuilder.Append("create or replace view '");
+                    stringBuilder.Append(ViewName);
+                    stringBuilder.Append("' as ");
+                }
                 stringBuilder.Append("select ");
                 if (limit > 0 && percent)
                 {
@@ -371,6 +431,20 @@ namespace SqlStringBuilder
                 return this;
             }
 
+            /// <summary>
+            /// 筛选条件（操作符，连接符是否为or[默认and]，是否为not，（筛选列，筛选值））
+            /// </summary>
+            /// <param name="whereOperator"></param>
+            /// <param name="or"></param>
+            /// <param name="not"></param>
+            /// <param name="keyValuePairs"></param>
+            /// <returns></returns>
+            public SqlBuilderRead Where(WhereOperator whereOperator = WhereOperator.Equal, bool or = false, bool not = false, params (string, string)[] keyValuePairs)
+            {
+                SetWhereFilter(keyValuePairs);
+                return this;
+            }
+
 
             private void SetWhereFilter(params (string, string)[] keyValuePairs)
             {
@@ -531,6 +605,16 @@ namespace SqlStringBuilder
                 return this;
             }
 
+            /// <summary>
+            /// 创建视图
+            /// </summary>
+            /// <param name="viewName"></param>
+            /// <returns></returns>
+            public SqlBuilderRead AsView(string viewName)
+            {
+                ViewName = viewName;
+                return this;
+            }
         }
 
         /// <summary>
