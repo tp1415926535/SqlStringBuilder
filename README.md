@@ -29,7 +29,15 @@ The order in which the methods are called is unaffected, except for the base fun
 ```C#
 string readSql = new SqlBuilder().Table("table").Read().Distinct().Columns("Column1", "Column2").Where(("Column1", "1"), ("Column2", "2")).Order(("id", false)).ToString();     
 Console.WriteLine(readSql);    
-//select  distinct Column1,Column2 from table where Column1 ='1' and Column2 ='2'  order by id desc     
+//select  distinct Column1,Column2 from table where Column1 ='1' and Column2 ='2'  order by id desc   
+
+string readOperatorSql = new SqlBuilder().Table("table").Read().Where(WhereOperator.Less, true, false, ("Column1", "10"), ("Column2", "5")).ToString();
+Console.WriteLine(readOperatorSql);  
+//select  *  from table where Column1 <10 or  Column2 <5
+
+string readBetweenSql = new SqlBuilder().Table("table").Read().WhereBetween("Column1","50","100").ToString();
+Console.WriteLine(readBetweenSql);  
+//select  *  from table where Column1 between '50' and '100'
 
 string readLastRowSql = new SqlBuilder().Table("table").Read().Order(("id", false)).Limit(1).ToString();    
 Console.WriteLine(readLastRowSql);    
@@ -156,8 +164,8 @@ Console.WriteLine(removeTableSql);
 
 
 ## Version 
-* v1.0.4 2022/10/31 Compatible View, adjust 'where' method, add demo project. 兼容视图，调整where方法，增加示例项目。   
-* v1.0.3 2022/08/25 Fix the way the select into statement is generated and the results. 修复select into语句的生成方式和结果。
-* v1.0.2 2022/08/23 Additional comment generation.The comment is now displayed when the mouse hovers over the Read(), Insert(), Update(), ... , ToString(), etc. methods will now display comments. 补充注释生成。现在鼠标停留在 Read()，Insert()，Update()，...，ToString()等方法时会显示注释。 
-* v1.0.1 2022/08/23 Fixed incorrect dataTable copying. 修复了错误的数据表复制。
-* v1.0.0 2022/08/22 Basic version. 基础版本
+* v1.0.4: 2022/10/31   Compatible View, adjust 'where' method, add demo project. 兼容视图，调整where方法，增加示例项目。   
+* v1.0.3: 2022/08/25   Fix the way the select into statement is generated and the results. 修复select into语句的生成方式和结果。
+* v1.0.2: 2022/08/23   Additional comment generation.The comment is now displayed when the mouse hovers over the Read(), Insert(), Update(), ... , ToString(), etc. methods will now display comments. 补充注释生成。现在鼠标停留在 Read()，Insert()，Update()，...，ToString()等方法时会显示注释。 
+* v1.0.1: 2022/08/23   Fixed incorrect dataTable copying. 修复了错误的数据表复制。
+* v1.0.0: 2022/08/22   Basic version. 基础版本
