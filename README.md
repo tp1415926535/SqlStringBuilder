@@ -25,6 +25,7 @@ The order in which the methods are called is unaffected, except for the base fun
 ## Examples
 
 ### Select
+
 ```C#
 string readSql = new SqlBuilder().Table("table").Read().Distinct().Columns("Column1", "Column2").Where(("Column1", "1"), ("Column2", "2")).Order(("id", false)).ToString();     
 Console.WriteLine(readSql);    
@@ -38,6 +39,7 @@ string getCountSql = new SqlBuilder().Table("table").Read().Count().ToString();
 Console.WriteLine(getCountSql);     
 //select  count(  * ) from table    
 ```
+
 ### Insert / Update / Delete
 ```C#
 string insertSql = new SqlBuilder().Table("table").Insert().ColumnValues(("Column1", "1"), ("Column2", "2")).ReturnEffectCount("id").ToString();    
@@ -105,6 +107,21 @@ Console.WriteLine(changeColumn);
 //alter table  change column Column1 C1 integer    
 ```
 
+### View
+```C#
+string createOrUpdateViewSql = new SqlBuilder().Table("table").Read().Columns("Column1","Column2").AsView("viewName").ToString();
+Console.WriteLine(createOrUpdateViewSql);  
+//create or replace view 'viewName' as select Column1,Column2 from table
+
+string createViewFromMultySql = new SqlBuilder().Table("table1,table2").Read().Columns("table1.* " , "table2.Name 'Name'" , "table2.Value 'Value'").AsView("viewName").ToString();
+Console.WriteLine(createViewFromMultySql);  
+//create or replace view 'viewName' as select table1.* ,table2.Name 'Name',table2.Value 'Value' from table1,table2
+
+string dropViewSql = new SqlBuilder().Table("viewName").Drop(true, true);
+Console.WriteLine(dropViewSql);  
+//drop view if exists viewName
+```
+    
 ### Other operations
 ```C#
 string checkTableExistSql = new SqlBuilder().Table("sqlite_master").Read().Columns("name").Where(("type", "table"), ("name", "tableName")).ToString();    
@@ -119,6 +136,14 @@ string getAllTableSql = new SqlBuilder().Table("sqlite_master").Read().Columns("
 Console.WriteLine(getAllTableSql);
 //select name from sqlite_master where type ='table' 
 
+string getAllTableSql2 = new SqlBuilder().GetAllNames();
+Console.WriteLine(getAllTableSql2);
+//select name from sqlite_master where type='table'
+
+string getAllViewSql = new SqlBuilder().GetAllNames(true);
+Console.WriteLine(getAllViewSql);
+//select name from sqlite_master where type='view'
+
 string backupSql = new SqlBuilder().Table("table").Read().Columns("Column1", "Column2").Copy("targetTable").ToString();        
 Console.WriteLine(backupSql);    
 //select Column1,Column2 into targetTable from table
@@ -127,3 +152,12 @@ string removeTableSql = new SqlBuilder().Table("tableName").Drop().ToString();
 Console.WriteLine(removeTableSql);    
 //drop table if exists tableName    
 ```
+
+
+
+## Version 
+* v1.0.4 2022/10/31 Compatible View, adjust 'where' method, add demo project. 兼容视图，调整where方法，增加示例项目。   
+* v1.0.3 2022/08/25 Fix the way the select into statement is generated and the results. 修复select into语句的生成方式和结果。
+* v1.0.2 2022/08/23 Additional comment generation.The comment is now displayed when the mouse hovers over the Read(), Insert(), Update(), ... , ToString(), etc. methods will now display comments. 补充注释生成。现在鼠标停留在 Read()，Insert()，Update()，...，ToString()等方法时会显示注释。 
+* v1.0.1 2022/08/23 Fixed incorrect dataTable copying. 修复了错误的数据表复制。
+* v1.0.1 2022/08/22 Basic version. 基础版本
