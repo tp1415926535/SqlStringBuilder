@@ -131,7 +131,10 @@ namespace Demo
             string getAllTableSql = new SqlBuilder().Table("sqlite_master").Read().Columns("name").Where(("type", "table")).ToString();
             Console.WriteLine("\r\n getAllTables:\r\n" + getAllTableSql);
 
-            string getAllViewSql = new SqlBuilder().Table("sqlite_master").Read().Columns("name").Where(("type", "view")).ToString();
+            string getAllTableSql2 = new SqlBuilder().GetAllNames();
+            Console.WriteLine("\r\n getAllTables2:\r\n" + getAllTableSql2);
+
+            string getAllViewSql = new SqlBuilder().GetAllNames(true);
             Console.WriteLine("\r\n getAllViews:\r\n" + getAllViewSql);
 
             string backupSql = new SqlBuilder().Table("table").Read().Columns("Column1", "Column2").Copy("targetTable").ToString();

@@ -175,6 +175,18 @@ namespace SqlStringBuilder
             return "select name from sqlite_master where type='" + type + "' and name='" + tableName + "'";
         }
 
+        /// <summary>
+        /// 获取数据库所有表/视图名
+        /// </summary>
+        /// <param name="isView">是否为视图</param>
+        /// <returns>select name from sqlite_master where type='table'</returns>
+        public string GetAllNames(bool isView = false)
+        {
+            string type = isView ? "view" : "table";
+            return "select name from sqlite_master where type='" + type + "'";
+        }
+
+
 
         /// <summary>
         /// 声明作用的表
