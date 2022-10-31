@@ -13,44 +13,35 @@ namespace SqlStringBuilder
     public enum WhereOperator
     {
         /// <summary>
-        /// =
+        /// key = 'value'
         /// </summary>
         Equal,
 
         /// <summary>
-        /// ＞
+        /// key ＞ 'value'
         /// </summary>
         Greater,
 
         /// <summary>
-        /// ＞=
+        /// key ＞= 'value'
         /// </summary>
         GreaterEqual,
 
         /// <summary>
-        /// ＜
+        /// key ＜ 'value'
         /// </summary>
         Less,
 
         /// <summary>
-        /// ＜=
+        /// key ＜= 'value'
         /// </summary>
         LessEqual,
 
         /// <summary>
-        /// between
-        /// </summary>
-        Between,
-
-        /// <summary>
-        /// like
+        /// key like 'value'
         /// </summary>
         Like,
 
-        /// <summary>
-        /// in
-        /// </summary>
-        In,
     }
 
     /// <summary>
@@ -60,19 +51,24 @@ namespace SqlStringBuilder
     {
         enum WhereType
         {
-            EqualAnd,
-            EqualOr,
-            LikeAnd,
-            LikeOr,
-            InMulty,
+            Equal,
+            Greater,
+            GreaterEqual,
+            Less,
+            LessEqual,
+            Like,
             Between,
-            NotBetween,
+            In,
         }
+
         //SqlAction action = SqlAction.None;
         string tableName = string.Empty;
         List<string> list = new List<string>();
         Dictionary<string, string> dic = new Dictionary<string, string>();
-        WhereType whereType = WhereType.EqualAnd;
+        WhereType whereType = WhereType.Equal;
+        //WhereOperator whereOperat = WhereOperator.Equal;
+        bool whereOrConnect = false;
+        bool whereNot = false;
         Dictionary<string, string> whereFilter = new Dictionary<string, string>();
         string whereColumn = string.Empty;
 
@@ -191,6 +187,79 @@ namespace SqlStringBuilder
             return this;
         }
 
+
+        private void AppendWhereSentence(StringBuilder stringBuilder, SqlBuilder sqlBuilder)
+        {
+            var whereType = sqlBuilder.whereType;
+            var whereOrConnect = sqlBuilder.whereOrConnect;
+            var whereNot = sqlBuilder.whereNot;
+            var whereColumn = sqlBuilder.whereColumn;
+            var whereFilter = sqlBuilder.whereFilter;
+
+            stringBuilder.Append(" where ");
+            if (whereType != WhereType.Between && whereType != WhereType.In)
+            {
+                string connect = whereOrConnect ? "' or  " : "' and ";
+                if (whereType != WhereType.Equal && whereType != WhereType.Like)
+                    connect = whereOrConnect ? " or  " : " and ";
+                string operat = " ='";
+                switch (whereType)
+                {
+                    case WhereType.Equal:
+                        break;
+                    case WhereType.Less:
+                        operat = " <";
+                        break;
+                    case WhereType.LessEqual:
+                        operat = " <=";
+                        break;
+                    case WhereType.Greater:
+                        operat = " >";
+                        break;
+                    case WhereType.GreaterEqual:
+                        operat = " >=";
+                        break;
+                    case WhereType.Like:
+                        operat = " like'";
+                        break;
+                }
+                foreach (var pair in whereFilter)
+                {
+                    if (whereNot) stringBuilder.Append(" not ");
+                    stringBuilder.Append(pair.Key);
+                    stringBuilder.Append(operat);
+                    stringBuilder.Append(pair.Value);
+                    stringBuilder.Append(connect);
+                }
+                stringBuilder = stringBuilder.Remove(stringBuilder.Length - 4, 4);
+            }
+            else if (whereType.Equals(WhereType.In))
+            {
+                stringBuilder.Append(whereColumn);
+                if (whereNot) stringBuilder.Append(" not ");
+                stringBuilder.Append(" in ('");
+                foreach (string value in whereFilter.Keys)
+                {
+                    stringBuilder.Append(value);
+                    stringBuilder.Append("','");
+                }
+                stringBuilder = stringBuilder.Remove(stringBuilder.Length - 2, 2);
+                stringBuilder.Append(") ");
+            }
+            else
+            {
+                stringBuilder.Append(whereColumn);
+                if (whereNot) stringBuilder.Append(" not ");
+                stringBuilder.Append(" between '");
+                stringBuilder.Append(whereFilter.ElementAt(0).Key);
+                stringBuilder.Append("' and '");
+                stringBuilder.Append(whereFilter.ElementAt(1).Key);
+                stringBuilder.Append("' ");
+            }
+
+        }
+
+
         /// <summary>
         /// 读取型模板
         /// </summary>
@@ -282,58 +351,7 @@ namespace SqlStringBuilder
                 stringBuilder.Append(" from ");
                 stringBuilder.Append(tableName);
                 if (whereFilter.Count > 0)
-                {
-                    stringBuilder.Append(" where ");
-                    if (whereType != WhereType.NotBetween && whereType != WhereType.Between && whereType != WhereType.InMulty)
-                    {
-                        string combine1 = " ='"; string combine2 = "' and ";
-                        switch (whereType)
-                        {
-                            case WhereType.EqualAnd:
-                                break;
-                            case WhereType.LikeAnd:
-                                combine1 = " like'"; combine2 = "' and ";
-                                break;
-                            case WhereType.EqualOr:
-                                combine1 = " ='"; combine2 = "' or  ";
-                                break;
-                            case WhereType.LikeOr:
-                                combine1 = " like'"; combine2 = "' or  ";
-                                break;
-                        }
-                        foreach (var pair in whereFilter)
-                        {
-                            stringBuilder.Append(pair.Key);
-                            stringBuilder.Append(combine1);
-                            stringBuilder.Append(pair.Value);
-                            stringBuilder.Append(combine2);
-                        }
-                        stringBuilder = stringBuilder.Remove(stringBuilder.Length - 4, 4);
-                    }
-                    else if (whereType.Equals(WhereType.InMulty))
-                    {
-                        stringBuilder.Append(whereColumn);
-                        stringBuilder.Append(" in ('");
-                        foreach (string value in whereFilter.Keys)
-                        {
-                            stringBuilder.Append(value);
-                            stringBuilder.Append("','");
-                        }
-                        stringBuilder = stringBuilder.Remove(stringBuilder.Length - 2, 2);
-                        stringBuilder.Append(") ");
-                    }
-                    else
-                    {
-                        stringBuilder.Append(whereColumn);
-                        if (whereType.Equals(WhereType.NotBetween))
-                            stringBuilder.Append(" not ");
-                        stringBuilder.Append(" between '");
-                        stringBuilder.Append(whereFilter.ElementAt(0).Key);
-                        stringBuilder.Append("' and '");
-                        stringBuilder.Append(whereFilter.ElementAt(1).Key);
-                        stringBuilder.Append("' ");
-                    }
-                }
+                    AppendWhereSentence(stringBuilder, this);
                 if (orderDic.Count > 0)
                 {
                     stringBuilder.Append(" order by ");
@@ -432,73 +450,32 @@ namespace SqlStringBuilder
             }
 
             /// <summary>
-            /// 筛选条件（操作符，连接符是否为or[默认and]，是否为not，（筛选列，筛选值））
-            /// </summary>
-            /// <param name="whereOperator"></param>
-            /// <param name="or"></param>
-            /// <param name="not"></param>
-            /// <param name="keyValuePairs"></param>
-            /// <returns></returns>
-            public SqlBuilderRead Where(WhereOperator whereOperator = WhereOperator.Equal, bool or = false, bool not = false, params (string, string)[] keyValuePairs)
-            {
-                SetWhereFilter(keyValuePairs);
-                return this;
-            }
-
-
-            private void SetWhereFilter(params (string, string)[] keyValuePairs)
-            {
-                foreach (var pair in keyValuePairs)
-                {
-                    if (whereFilter.ContainsKey(pair.Item1)) continue;
-                    whereFilter.Add(pair.Item1, pair.Item2);
-                }
-            }
-
-            /// <summary>
-            /// 筛选条件_相等_与（筛选列，筛选值）
+            /// 筛选条件（筛选列，筛选值） 默认操作符为 = and
             /// </summary>
             /// <param name="keyValuePairs"></param>
             /// <returns></returns>
             public SqlBuilderRead Where(params (string, string)[] keyValuePairs)
             {
-                whereType = WhereType.EqualAnd;
+                whereType = WhereType.Equal;
+                whereOrConnect = false;
+                whereNot = false;
                 SetWhereFilter(keyValuePairs);
                 return this;
             }
 
             /// <summary>
-            /// 筛选条件_模糊_与（筛选列，筛选值）
+            /// 筛选条件（操作符，连接符是否为or[默认and]，是否为not，（筛选列，筛选值））
             /// </summary>
+            /// <param name="whereOperator"></param>
+            /// <param name="orConnect">false and ; true or</param>
+            /// <param name="not"></param>
             /// <param name="keyValuePairs"></param>
             /// <returns></returns>
-            public SqlBuilderRead WhereLike(params (string, string)[] keyValuePairs)
+            public SqlBuilderRead Where(WhereOperator whereOperator, bool orConnect, bool not, params (string, string)[] keyValuePairs)
             {
-                whereType = WhereType.LikeAnd;
-                SetWhereFilter(keyValuePairs);
-                return this;
-            }
-
-            /// <summary>
-            /// 筛选条件_相等_或（筛选列，筛选值）
-            /// </summary>
-            /// <param name="keyValuePairs"></param>
-            /// <returns></returns>
-            public SqlBuilderRead WhereOr(params (string, string)[] keyValuePairs)
-            {
-                whereType = WhereType.EqualOr;
-                SetWhereFilter(keyValuePairs);
-                return this;
-            }
-
-            /// <summary>
-            /// 筛选条件_模糊_或（筛选列，筛选值）
-            /// </summary>
-            /// <param name="keyValuePairs"></param>
-            /// <returns></returns>
-            public SqlBuilderRead WhereLikeOr(params (string, string)[] keyValuePairs)
-            {
-                whereType = WhereType.LikeOr;
+                whereType = (WhereType)whereOperator;
+                whereOrConnect = orConnect;
+                whereNot = not;
                 SetWhereFilter(keyValuePairs);
                 return this;
             }
@@ -507,11 +484,13 @@ namespace SqlStringBuilder
             /// 筛选条件_多个值（筛选列，值）
             /// </summary>
             /// <param name="column"></param>
+            /// <param name="not"></param>
             /// <param name="values"></param>
             /// <returns></returns>
-            public SqlBuilderRead WhereIn(string column, params string[] values)
+            public SqlBuilderRead WhereIn(string column, bool not = false, params string[] values)
             {
-                whereType = WhereType.InMulty;
+                whereType = WhereType.In;
+                whereNot = not;
                 whereColumn = column;
                 foreach (var value in values)
                 {
@@ -531,13 +510,24 @@ namespace SqlStringBuilder
             /// <returns></returns>
             public SqlBuilderRead WhereBetween(string column, string value1, string value2, bool not = false)
             {
-                whereType = not ? WhereType.NotBetween : WhereType.Between;
+                whereType = WhereType.Between;
+                whereNot = not;
                 whereColumn = column;
                 if (!whereFilter.ContainsKey(value1))
                     whereFilter.Add(value1, string.Empty);
                 if (!whereFilter.ContainsKey(value2))
                     whereFilter.Add(value2, string.Empty);
                 return this;
+            }
+
+
+            private void SetWhereFilter(params (string, string)[] keyValuePairs)
+            {
+                foreach (var pair in keyValuePairs)
+                {
+                    if (whereFilter.ContainsKey(pair.Item1)) continue;
+                    whereFilter.Add(pair.Item1, pair.Item2);
+                }
             }
 
             /// <summary>
@@ -669,7 +659,7 @@ namespace SqlStringBuilder
                 }
                 else if (dataTable != null && dataTable.Rows.Count > 0)
                 {
-                    stringBuilder.Append("(");
+                    stringBuilder.Append(" (");
                     foreach (DataColumn column in dataTable.Columns)
                     {
                         stringBuilder.Append(column.ColumnName);
@@ -892,58 +882,7 @@ namespace SqlStringBuilder
                     stringBuilder.Remove(stringBuilder.Length - 1, 1);
                 }
                 if (whereFilter.Count > 0)
-                {
-                    stringBuilder.Append(" where ");
-                    if (whereType != WhereType.NotBetween && whereType != WhereType.Between && whereType != WhereType.InMulty)
-                    {
-                        string combine1 = " ='"; string combine2 = "' and ";
-                        switch (whereType)
-                        {
-                            case WhereType.EqualAnd:
-                                break;
-                            case WhereType.LikeAnd:
-                                combine1 = " like'"; combine2 = "' and ";
-                                break;
-                            case WhereType.EqualOr:
-                                combine1 = " ='"; combine2 = "' or  ";
-                                break;
-                            case WhereType.LikeOr:
-                                combine1 = " like'"; combine2 = "' or  ";
-                                break;
-                        }
-                        foreach (var pair in whereFilter)
-                        {
-                            stringBuilder.Append(pair.Key);
-                            stringBuilder.Append(combine1);
-                            stringBuilder.Append(pair.Value);
-                            stringBuilder.Append(combine2);
-                        }
-                        stringBuilder = stringBuilder.Remove(stringBuilder.Length - 4, 4);
-                    }
-                    else if (whereType.Equals(WhereType.InMulty))
-                    {
-                        stringBuilder.Append(whereColumn);
-                        stringBuilder.Append(" in ('");
-                        foreach (string value in whereFilter.Keys)
-                        {
-                            stringBuilder.Append(value);
-                            stringBuilder.Append("','");
-                        }
-                        stringBuilder = stringBuilder.Remove(stringBuilder.Length - 2, 2);
-                        stringBuilder.Append(") ");
-                    }
-                    else
-                    {
-                        stringBuilder.Append(whereColumn);
-                        if (whereType.Equals(WhereType.NotBetween))
-                            stringBuilder.Append(" not ");
-                        stringBuilder.Append(" between '");
-                        stringBuilder.Append(whereFilter.ElementAt(0).Key);
-                        stringBuilder.Append("' and '");
-                        stringBuilder.Append(whereFilter.ElementAt(1).Key);
-                        stringBuilder.Append("' ");
-                    }
-                }
+                    AppendWhereSentence(stringBuilder, this);
                 if (!string.IsNullOrEmpty(effectColumn))
                 {
                     stringBuilder.Append(" returning ");
@@ -1010,59 +949,34 @@ namespace SqlStringBuilder
                 return this;
             }
 
-            private void SetWhereFilter(params (string, string)[] keyValuePairs)
-            {
-                foreach (var pair in keyValuePairs)
-                {
-                    if (whereFilter.ContainsKey(pair.Item1)) continue;
-                    whereFilter.Add(pair.Item1, pair.Item2);
-                }
-            }
 
             /// <summary>
-            /// 筛选条件_相等_与（筛选列，筛选值）
+            /// 筛选条件（筛选列，筛选值） 默认操作符为 = and
             /// </summary>
             /// <param name="keyValuePairs"></param>
             /// <returns></returns>
             public SqlBuilderUpdate Where(params (string, string)[] keyValuePairs)
             {
-                whereType = WhereType.EqualAnd;
+                whereType = WhereType.Equal;
+                whereOrConnect = false;
+                whereNot = false;
                 SetWhereFilter(keyValuePairs);
                 return this;
             }
 
             /// <summary>
-            /// 筛选条件_模糊_与（筛选列，筛选值）
+            /// 筛选条件（操作符，连接符是否为or[默认and]，是否为not，（筛选列，筛选值））
             /// </summary>
+            /// <param name="whereOperator"></param>
+            /// <param name="orConnect">false and ; true or</param>
+            /// <param name="not"></param>
             /// <param name="keyValuePairs"></param>
             /// <returns></returns>
-            public SqlBuilderUpdate WhereLike(params (string, string)[] keyValuePairs)
+            public SqlBuilderUpdate Where(WhereOperator whereOperator, bool orConnect, bool not, params (string, string)[] keyValuePairs)
             {
-                whereType = WhereType.LikeAnd;
-                SetWhereFilter(keyValuePairs);
-                return this;
-            }
-
-            /// <summary>
-            /// 筛选条件_相等_或（筛选列，筛选值）
-            /// </summary>
-            /// <param name="keyValuePairs"></param>
-            /// <returns></returns>
-            public SqlBuilderUpdate WhereOr(params (string, string)[] keyValuePairs)
-            {
-                whereType = WhereType.EqualOr;
-                SetWhereFilter(keyValuePairs);
-                return this;
-            }
-
-            /// <summary>
-            /// 筛选条件_模糊_或（筛选列，筛选值）
-            /// </summary>
-            /// <param name="keyValuePairs"></param>
-            /// <returns></returns>
-            public SqlBuilderUpdate WhereLikeOr(params (string, string)[] keyValuePairs)
-            {
-                whereType = WhereType.LikeOr;
+                whereType = (WhereType)whereOperator;
+                whereOrConnect = orConnect;
+                whereNot = not;
                 SetWhereFilter(keyValuePairs);
                 return this;
             }
@@ -1071,11 +985,13 @@ namespace SqlStringBuilder
             /// 筛选条件_多个值（筛选列，值）
             /// </summary>
             /// <param name="column"></param>
+            /// <param name="not"></param>
             /// <param name="values"></param>
             /// <returns></returns>
-            public SqlBuilderUpdate WhereIn(string column, params string[] values)
+            public SqlBuilderUpdate WhereIn(string column, bool not, params string[] values)
             {
-                whereType = WhereType.InMulty;
+                whereType = WhereType.In;
+                whereNot = not;
                 whereColumn = column;
                 foreach (var value in values)
                 {
@@ -1095,7 +1011,8 @@ namespace SqlStringBuilder
             /// <returns></returns>
             public SqlBuilderUpdate WhereBetween(string column, string value1, string value2, bool not = false)
             {
-                whereType = not ? WhereType.NotBetween : WhereType.Between;
+                whereType = WhereType.Between;
+                whereNot = not;
                 whereColumn = column;
                 if (!whereFilter.ContainsKey(value1))
                     whereFilter.Add(value1, string.Empty);
@@ -1103,6 +1020,17 @@ namespace SqlStringBuilder
                     whereFilter.Add(value2, string.Empty);
                 return this;
             }
+
+
+            private void SetWhereFilter(params (string, string)[] keyValuePairs)
+            {
+                foreach (var pair in keyValuePairs)
+                {
+                    if (whereFilter.ContainsKey(pair.Item1)) continue;
+                    whereFilter.Add(pair.Item1, pair.Item2);
+                }
+            }
+
 
             /// <summary>
             /// 返回影响的行数(依据列名)
@@ -1147,58 +1075,7 @@ namespace SqlStringBuilder
                 stringBuilder.Append("delete from ");
                 stringBuilder.Append(tableName);
                 if (whereFilter.Count > 0)
-                {
-                    stringBuilder.Append(" where ");
-                    if (whereType != WhereType.NotBetween && whereType != WhereType.Between && whereType != WhereType.InMulty)
-                    {
-                        string combine1 = " ='"; string combine2 = "' and ";
-                        switch (whereType)
-                        {
-                            case WhereType.EqualAnd:
-                                break;
-                            case WhereType.LikeAnd:
-                                combine1 = " like'"; combine2 = "' and ";
-                                break;
-                            case WhereType.EqualOr:
-                                combine1 = " ='"; combine2 = "' or  ";
-                                break;
-                            case WhereType.LikeOr:
-                                combine1 = " like'"; combine2 = "' or  ";
-                                break;
-                        }
-                        foreach (var pair in whereFilter)
-                        {
-                            stringBuilder.Append(pair.Key);
-                            stringBuilder.Append(combine1);
-                            stringBuilder.Append(pair.Value);
-                            stringBuilder.Append(combine2);
-                        }
-                        stringBuilder = stringBuilder.Remove(stringBuilder.Length - 4, 4);
-                    }
-                    else if (whereType.Equals(WhereType.InMulty))
-                    {
-                        stringBuilder.Append(whereColumn);
-                        stringBuilder.Append(" in ('");
-                        foreach (string value in whereFilter.Keys)
-                        {
-                            stringBuilder.Append(value);
-                            stringBuilder.Append("','");
-                        }
-                        stringBuilder = stringBuilder.Remove(stringBuilder.Length - 2, 2);
-                        stringBuilder.Append(") ");
-                    }
-                    else
-                    {
-                        stringBuilder.Append(whereColumn);
-                        if (whereType.Equals(WhereType.NotBetween))
-                            stringBuilder.Append(" not ");
-                        stringBuilder.Append(" between '");
-                        stringBuilder.Append(whereFilter.ElementAt(0).Key);
-                        stringBuilder.Append("' and '");
-                        stringBuilder.Append(whereFilter.ElementAt(1).Key);
-                        stringBuilder.Append("' ");
-                    }
-                }
+                    AppendWhereSentence(stringBuilder, this);
                 if (!string.IsNullOrEmpty(effectColumn))
                 {
                     stringBuilder.Append(" returning ");
@@ -1218,59 +1095,33 @@ namespace SqlStringBuilder
                 return this;
             }
 
-            private void SetWhereFilter(params (string, string)[] keyValuePairs)
-            {
-                foreach (var pair in keyValuePairs)
-                {
-                    if (whereFilter.ContainsKey(pair.Item1)) continue;
-                    whereFilter.Add(pair.Item1, pair.Item2);
-                }
-            }
-
             /// <summary>
-            /// 筛选条件_相等_与（筛选列，筛选值）
+            /// 筛选条件（筛选列，筛选值） 默认操作符为 = and
             /// </summary>
             /// <param name="keyValuePairs"></param>
             /// <returns></returns>
             public SqlBuilderDelete Where(params (string, string)[] keyValuePairs)
             {
-                whereType = WhereType.EqualAnd;
+                whereType = WhereType.Equal;
+                whereOrConnect = false;
+                whereNot = false;
                 SetWhereFilter(keyValuePairs);
                 return this;
             }
 
             /// <summary>
-            /// 筛选条件_模糊_与（筛选列，筛选值）
+            /// 筛选条件（操作符，连接符是否为or[默认and]，是否为not，（筛选列，筛选值））
             /// </summary>
+            /// <param name="whereOperator"></param>
+            /// <param name="orConnect">false and ; true or</param>
+            /// <param name="not"></param>
             /// <param name="keyValuePairs"></param>
             /// <returns></returns>
-            public SqlBuilderDelete WhereLike(params (string, string)[] keyValuePairs)
+            public SqlBuilderDelete Where(WhereOperator whereOperator, bool orConnect, bool not, params (string, string)[] keyValuePairs)
             {
-                whereType = WhereType.LikeAnd;
-                SetWhereFilter(keyValuePairs);
-                return this;
-            }
-
-            /// <summary>
-            /// 筛选条件_相等_或（筛选列，筛选值）
-            /// </summary>
-            /// <param name="keyValuePairs"></param>
-            /// <returns></returns>
-            public SqlBuilderDelete WhereOr(params (string, string)[] keyValuePairs)
-            {
-                whereType = WhereType.EqualOr;
-                SetWhereFilter(keyValuePairs);
-                return this;
-            }
-
-            /// <summary>
-            /// 筛选条件_模糊_或（筛选列，筛选值）
-            /// </summary>
-            /// <param name="keyValuePairs"></param>
-            /// <returns></returns>
-            public SqlBuilderDelete WhereLikeOr(params (string, string)[] keyValuePairs)
-            {
-                whereType = WhereType.LikeOr;
+                whereType = (WhereType)whereOperator;
+                whereOrConnect = orConnect;
+                whereNot = not;
                 SetWhereFilter(keyValuePairs);
                 return this;
             }
@@ -1279,11 +1130,13 @@ namespace SqlStringBuilder
             /// 筛选条件_多个值（筛选列，值）
             /// </summary>
             /// <param name="column"></param>
+            /// <param name="not"></param>
             /// <param name="values"></param>
             /// <returns></returns>
-            public SqlBuilderDelete WhereIn(string column, params string[] values)
+            public SqlBuilderDelete WhereIn(string column, bool not = false, params string[] values)
             {
-                whereType = WhereType.InMulty;
+                whereType = WhereType.In;
+                whereNot = not;
                 whereColumn = column;
                 foreach (var value in values)
                 {
@@ -1303,7 +1156,8 @@ namespace SqlStringBuilder
             /// <returns></returns>
             public SqlBuilderDelete WhereBetween(string column, string value1, string value2, bool not = false)
             {
-                whereType = not ? WhereType.NotBetween : WhereType.Between;
+                whereType = WhereType.Between;
+                whereNot = not;
                 whereColumn = column;
                 if (!whereFilter.ContainsKey(value1))
                     whereFilter.Add(value1, string.Empty);
@@ -1311,6 +1165,17 @@ namespace SqlStringBuilder
                     whereFilter.Add(value2, string.Empty);
                 return this;
             }
+
+
+            private void SetWhereFilter(params (string, string)[] keyValuePairs)
+            {
+                foreach (var pair in keyValuePairs)
+                {
+                    if (whereFilter.ContainsKey(pair.Item1)) continue;
+                    whereFilter.Add(pair.Item1, pair.Item2);
+                }
+            }
+
 
             /// <summary>
             /// 返回影响的行数(依据列名)
