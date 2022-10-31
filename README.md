@@ -2,8 +2,8 @@
 Generate sql statements by freely calling functions instead of manually splicing strings.     
 通过自由调用函数生成sql语句，而不用手动拼接字符串。   
 
-[![release](https://img.shields.io/static/v1?label=release&message=1.0.3&color=green&logo=github)](https://github.com/tp1415926535/SqlStringBuilder/releases) 
-[![nuget](https://img.shields.io/static/v1?label=nuget&message=1.0.3&color=lightblue&logo=nuget)](https://www.nuget.org/packages/SqlStringBuilder) 
+[![release](https://img.shields.io/static/v1?label=release&message=1.0.4&color=green&logo=github)](https://github.com/tp1415926535/SqlStringBuilder/releases) 
+[![nuget](https://img.shields.io/static/v1?label=nuget&message=1.0.4&color=lightblue&logo=nuget)](https://www.nuget.org/packages/SqlStringBuilder) 
 [![license](https://img.shields.io/static/v1?label=license&message=MIT&color=silver)](https://github.com/tp1415926535/SqlStringBuilder/blob/master/LICENSE) 
 ![C#](https://img.shields.io/github/languages/top/tp1415926535/SqlStringBuilder) 
 
@@ -160,4 +160,4 @@ Console.WriteLine(removeTableSql);
 * v1.0.3 2022/08/25 Fix the way the select into statement is generated and the results. 修复select into语句的生成方式和结果。
 * v1.0.2 2022/08/23 Additional comment generation.The comment is now displayed when the mouse hovers over the Read(), Insert(), Update(), ... , ToString(), etc. methods will now display comments. 补充注释生成。现在鼠标停留在 Read()，Insert()，Update()，...，ToString()等方法时会显示注释。 
 * v1.0.1 2022/08/23 Fixed incorrect dataTable copying. 修复了错误的数据表复制。
-* v1.0.1 2022/08/22 Basic version. 基础版本
+* v1.0.0 2022/08/22 Basic version. 基础版本
