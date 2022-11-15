@@ -2,8 +2,8 @@
 Generate sql statements by freely calling functions instead of manually splicing strings.     
 通过自由调用函数生成sql语句，而不用手动拼接字符串。   
 
-[![release](https://img.shields.io/static/v1?label=release&message=1.0.4&color=green&logo=github)](https://github.com/tp1415926535/SqlStringBuilder/releases) 
-[![nuget](https://img.shields.io/static/v1?label=nuget&message=1.0.4&color=lightblue&logo=nuget)](https://www.nuget.org/packages/SqlStringBuilder) 
+[![release](https://img.shields.io/static/v1?label=release&message=1.0.5&color=green&logo=github)](https://github.com/tp1415926535/SqlStringBuilder/releases) 
+[![nuget](https://img.shields.io/static/v1?label=nuget&message=1.0.5&color=lightblue&logo=nuget)](https://www.nuget.org/packages/SqlStringBuilder) 
 [![license](https://img.shields.io/static/v1?label=license&message=MIT&color=silver)](https://github.com/tp1415926535/SqlStringBuilder/blob/master/LICENSE) 
 ![C#](https://img.shields.io/github/languages/top/tp1415926535/SqlStringBuilder) 
 
@@ -139,6 +139,36 @@ Console.WriteLine(dropViewSql);
 //drop view if exists viewName
 ```
     
+
+### WhereNested
+```C#
+string nestedOperate1 = new SqlBuilder().Table("tableName").Read().Columns("Column1")
+    .Where("Column2", WhereOperator.Less, "select * from table2 where columnA = '1'").ToString();
+Console.WriteLine(nestedOperate1);
+//select Column1 from tableName where Column2 <(select * from table2 where columnA = '1')
+
+string nestedOperate2 = new SqlBuilder().Table("tableName").Read().Columns("Column1")
+    .Where("Column2", WhereOperator.Less, new SqlBuilder().Table("table2").Read().Where(("columnA", "1")).ToString()).ToString();
+Console.WriteLine(nestedOperate2);
+//select Column1 from tableName where Column2 <(select  *  from table2 where columnA = '1' )
+
+string nestedAny = new SqlBuilder().Table("tableName").Read().Columns("Column1")
+    .WhereAny("Column2", WhereOperator.Greater, new SqlBuilder().Table("table2").Read().Where(("columnA", "1")).ToString()).ToString();
+Console.WriteLine(nestedAny);
+//select Column1 from tableName where Column2 > any (select  *  from table2 where columnA = '1' )
+
+string nestedAll = new SqlBuilder().Table("tableName").Read().Columns("Column1")
+    .WhereAll("Column2", WhereOperator.GreaterEqual, new SqlBuilder().Table("table2").Read().Where(("columnA", "1")).ToString()).ToString();
+Console.WriteLine(nestedAll);
+//select Column1 from tableName where Column2 >= all (select  *  from table2 where columnA = '1' )
+
+string nestedIn = new SqlBuilder().Table("tableName").Read().Columns("Column1")
+    .WhereIn("Column2", new SqlBuilder().Table("table2").Read().Where(("columnA", "1")).ToString()).ToString();
+Console.WriteLine(nestedIn);
+//select Column1 from tableName where Column2 in (select  *  from table2 where columnA = '1' )
+```
+   
+    
 ### Other operations
 ```C#
 string checkTableExistSql = new SqlBuilder().Table("sqlite_master").Read().Columns("name").Where(("type", "table"), ("name", "tableName")).ToString();    
@@ -170,35 +200,7 @@ Console.WriteLine(removeTableSql);
 //drop table if exists tableName    
 ```
 
-### WhereNested
-```C#
-string nestedOperate1 = new SqlBuilder().Table("tableName").Read().Columns("Column1")
-    .Where("Column2", WhereOperator.Less, "select * from table2 where columnA = '1'").ToString();
-Console.WriteLine(nestedOperate1);
-//select Column1 from tableName where Column2 <(select * from table2 where columnA = '1')
-
-string nestedOperate2 = new SqlBuilder().Table("tableName").Read().Columns("Column1")
-    .Where("Column2", WhereOperator.Less, new SqlBuilder().Table("table2").Read().Where(("columnA", "1")).ToString()).ToString();
-Console.WriteLine(nestedOperate2);
-//select Column1 from tableName where Column2 <(select  *  from table2 where columnA = '1' )
-
-string nestedAny = new SqlBuilder().Table("tableName").Read().Columns("Column1")
-    .WhereAny("Column2", WhereOperator.Greater, new SqlBuilder().Table("table2").Read().Where(("columnA", "1")).ToString()).ToString();
-Console.WriteLine(nestedAny);
-//select Column1 from tableName where Column2 > any (select  *  from table2 where columnA = '1' )
-
-string nestedAll = new SqlBuilder().Table("tableName").Read().Columns("Column1")
-    .WhereAll("Column2", WhereOperator.GreaterEqual, new SqlBuilder().Table("table2").Read().Where(("columnA", "1")).ToString()).ToString();
-Console.WriteLine(nestedAll);
-//select Column1 from tableName where Column2 >= all (select  *  from table2 where columnA = '1' )
-
-string nestedIn = new SqlBuilder().Table("tableName").Read().Columns("Column1")
-    .WhereIn("Column2", new SqlBuilder().Table("table2").Read().Where(("columnA", "1")).ToString()).ToString();
-Console.WriteLine(nestedIn);
-//select Column1 from tableName where Column2 in (select  *  from table2 where columnA = '1' )
-```
-
-
+   
 
 ## Version 
 * v1.0.5：2022/11/15   Compatible with nested statements; Code is spread to multiple scripts to increase readability. 兼容嵌套语句；代码分散到多个脚本增加可读性
