@@ -27,6 +27,7 @@ namespace Demo
             EditExamples();
             ViewExamples();
             OthersExamples();
+            NestedExamples();
 
             Console.Read();
         }
@@ -41,7 +42,7 @@ namespace Demo
             string readOperatorSql = new SqlBuilder().Table("table").Read().Where(WhereOperator.Less, true, false, ("Column1", "10"), ("Column2", "5")).ToString();
             Console.WriteLine("\r\n readOperator:\r\n" + readOperatorSql);
 
-            string readBetweenSql = new SqlBuilder().Table("table").Read().WhereBetween("Column1","50","100").ToString();
+            string readBetweenSql = new SqlBuilder().Table("table").Read().WhereBetween("Column1", "50", "100").ToString();
             Console.WriteLine("\r\n readBetween:\r\n" + readBetweenSql);
 
             string readLastRowSql = new SqlBuilder().Table("table").Read().Order(("id", false)).Limit(1).ToString();
@@ -49,6 +50,13 @@ namespace Demo
 
             string getCountSql = new SqlBuilder().Table("table").Read().Count().ToString();
             Console.WriteLine("\r\n getCount:\r\n" + getCountSql);
+
+            string readTwoTableSql = new SqlBuilder().Table("table1,table2").Read().Columns("table1.name", "table2.name").Where(true, ("table1.id", "table2.id")).ToString();
+            Console.WriteLine("\r\n readTwoTableSql:\r\n" + readTwoTableSql);
+
+            string readUnionSql = new SqlBuilder().Table("table1").Read().Union(new SqlBuilder().Table("table2").Read().ToString()).ToString();
+            Console.WriteLine("\r\n readUnionSql:\r\n" + readUnionSql);
+
         }
 
         private static void InsertUpdateDeleteExamples()
@@ -105,10 +113,10 @@ namespace Demo
         {
             Console.WriteLine("\r\n————————————\r\nView\r\n————————————");
 
-            string createOrUpdateViewSql = new SqlBuilder().Table("table").Read().Columns("Column1","Column2").AsView("viewName").ToString();
+            string createOrUpdateViewSql = new SqlBuilder().Table("table").Read().Columns("Column1", "Column2").AsView("viewName").ToString();
             Console.WriteLine("\r\n createOrUpdateView:\r\n" + createOrUpdateViewSql);
 
-            string createViewFromMultySql = new SqlBuilder().Table("table1,table2").Read().Columns("table1.* " , "table2.Name 'Name'" , "table2.Value 'Value'").AsView("viewName").ToString();
+            string createViewFromMultySql = new SqlBuilder().Table("table1,table2").Read().Columns("table1.* ", "table2.Name 'Name'", "table2.Value 'Value'").AsView("viewName").ToString();
             Console.WriteLine("\r\n createViewFromMulty:\r\n" + createViewFromMultySql);
 
             string dropViewSql = new SqlBuilder().Table("viewName").Drop(true, true);
@@ -144,11 +152,35 @@ namespace Demo
             Console.WriteLine("\r\n removeTable:\r\n" + removeTableSql);
         }
 
+        private static void NestedExamples()
+        {
+            Console.WriteLine("\r\n————————————\r\nNested\r\n————————————");
+
+            string nestedOperate1 = new SqlBuilder().Table("tableName").Read().Columns("Column1")
+                .Where("Column2", WhereOperator.Less, "select * from table2 where columnA = '1'").ToString();
+            Console.WriteLine("\r\n nestedOperate1:\r\n" + nestedOperate1);
+
+            string nestedOperate2 = new SqlBuilder().Table("tableName").Read().Columns("Column1")
+                .Where("Column2", WhereOperator.Less, new SqlBuilder().Table("table2").Read().Where(("columnA", "1")).ToString()).ToString();
+            Console.WriteLine("\r\n nestedOperate2:\r\n" + nestedOperate2);
+
+            string nestedAny = new SqlBuilder().Table("tableName").Read().Columns("Column1")
+                .WhereAny("Column2", WhereOperator.Greater, new SqlBuilder().Table("table2").Read().Where(("columnA", "1")).ToString()).ToString();
+            Console.WriteLine("\r\n nestedAny:\r\n" + nestedAny);
+
+            string nestedAll = new SqlBuilder().Table("tableName").Read().Columns("Column1")
+                .WhereAll("Column2", WhereOperator.GreaterEqual, new SqlBuilder().Table("table2").Read().Where(("columnA", "1")).ToString()).ToString();
+            Console.WriteLine("\r\n nestedAll:\r\n" + nestedAll);
+
+            string nestedIn = new SqlBuilder().Table("tableName").Read().Columns("Column1")
+                .WhereIn("Column2", new SqlBuilder().Table("table2").Read().Where(("columnA", "1")).ToString()).ToString();
+            Console.WriteLine("\r\n nestedIn:\r\n" + nestedIn);
+        }
+
         class Foo
         {
             public string col1 { get; set; }
             public string col2 { get; set; }
         }
-
     }
 }
