@@ -46,6 +46,15 @@ Console.WriteLine(readLastRowSql);
 string getCountSql = new SqlBuilder().Table("table").Read().Count().ToString();     
 Console.WriteLine(getCountSql);     
 //select  count(  * ) from table    
+
+string readTwoTableSql = new SqlBuilder().Table("table1,table2").Read().Columns("table1.name", "table2.name").Where(true, ("table1.id", "table2.id")).ToString();
+Console.WriteLine(readTwoTableSql);
+//select table1.name,table2.name from table1,table2 where table1.id = table2.id
+
+string readUnionSql = new SqlBuilder().Table("table1").Read().Union(new SqlBuilder().Table("table2").Read().ToString()).ToString();
+Console.WriteLine(readUnionSql);
+//select  *  from table1 union all select  *  from table2
+
 ```
 
 ### Insert / Update / Delete
@@ -161,9 +170,38 @@ Console.WriteLine(removeTableSql);
 //drop table if exists tableName    
 ```
 
+### WhereNested
+```C#
+string nestedOperate1 = new SqlBuilder().Table("tableName").Read().Columns("Column1")
+    .Where("Column2", WhereOperator.Less, "select * from table2 where columnA = '1'").ToString();
+Console.WriteLine(nestedOperate1);
+//select Column1 from tableName where Column2 <(select * from table2 where columnA = '1')
+
+string nestedOperate2 = new SqlBuilder().Table("tableName").Read().Columns("Column1")
+    .Where("Column2", WhereOperator.Less, new SqlBuilder().Table("table2").Read().Where(("columnA", "1")).ToString()).ToString();
+Console.WriteLine(nestedOperate2);
+//select Column1 from tableName where Column2 <(select  *  from table2 where columnA = '1' )
+
+string nestedAny = new SqlBuilder().Table("tableName").Read().Columns("Column1")
+    .WhereAny("Column2", WhereOperator.Greater, new SqlBuilder().Table("table2").Read().Where(("columnA", "1")).ToString()).ToString();
+Console.WriteLine(nestedAny);
+//select Column1 from tableName where Column2 > any (select  *  from table2 where columnA = '1' )
+
+string nestedAll = new SqlBuilder().Table("tableName").Read().Columns("Column1")
+    .WhereAll("Column2", WhereOperator.GreaterEqual, new SqlBuilder().Table("table2").Read().Where(("columnA", "1")).ToString()).ToString();
+Console.WriteLine(nestedAll);
+//select Column1 from tableName where Column2 >= all (select  *  from table2 where columnA = '1' )
+
+string nestedIn = new SqlBuilder().Table("tableName").Read().Columns("Column1")
+    .WhereIn("Column2", new SqlBuilder().Table("table2").Read().Where(("columnA", "1")).ToString()).ToString();
+Console.WriteLine(nestedIn);
+//select Column1 from tableName where Column2 in (select  *  from table2 where columnA = '1' )
+```
+
 
 
 ## Version 
+* v1.0.5：2022/11/15   Compatible with nested statements; Code is spread to multiple scripts to increase readability. 兼容嵌套语句；代码分散到多个脚本增加可读性
 * v1.0.4: 2022/10/31   Compatible View, adjust 'where' method, add demo project. 兼容视图，调整where方法，增加示例项目。   
 * v1.0.3: 2022/08/25   Fix the way the select into statement is generated and the results. 修复select into语句的生成方式和结果。
 * v1.0.2: 2022/08/23   Additional comment generation.The comment is now displayed when the mouse hovers over the Read(), Insert(), Update(), ... , ToString(), etc. methods will now display comments. 补充注释生成。现在鼠标停留在 Read()，Insert()，Update()，...，ToString()等方法时会显示注释。 
